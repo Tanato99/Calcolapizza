@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -24,6 +25,10 @@ header::before{content:'';position:absolute;top:-20px;left:50%;transform:transla
 header h1{font-family:'Fraunces',serif;font-size:2.4rem;color:var(--accent);letter-spacing:-0.03em;line-height:1.1;font-weight:700;margin-top:8px}
 header p{color:var(--muted);font-size:0.82rem;margin-top:6px;letter-spacing:0.02em}
 .badge{display:inline-block;background:var(--green-bg);color:var(--green);font-size:0.68rem;font-weight:600;padding:3px 12px;border-radius:20px;margin-top:8px;letter-spacing:0.05em;text-transform:uppercase}
+
+.lang-toggle{position:absolute;top:0;right:0;display:flex;gap:0;border:1.5px solid var(--border);border-radius:8px;overflow:hidden}
+.lang-toggle button{padding:5px 12px;font-size:0.72rem;cursor:pointer;transition:all 0.2s;color:var(--muted);background:var(--input-bg);font-weight:500;border:none;font-family:'DM Sans',sans-serif}
+.lang-toggle button.active{background:var(--accent);color:#fff;font-weight:600}
 
 .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px 20px;margin-bottom:14px;border:1px solid var(--border)}
 .card h2{font-family:'Fraunces',serif;font-size:1.1rem;color:var(--text);margin-bottom:14px;padding-bottom:10px;border-bottom:1.5px solid var(--border);font-weight:500;display:flex;align-items:center;gap:8px}
@@ -100,12 +105,16 @@ footer{text-align:center;margin-top:18px;font-size:0.7rem;color:var(--muted);lin
 <div class="wrap">
   <header>
     <h1>Calcolapizza</h1>
-    <p>Dato il W della farina, stima maturazione, apretto e dose lievito</p>
-    <div class="badge">Calibrato su dati empirici + simulazione termica</div>
+    <p id="i-subtitle"></p>
+    <div class="badge" id="i-badge"></div>
+    <div class="lang-toggle">
+      <button id="btn-it" onclick="setLang('it')">IT</button>
+      <button id="btn-en" onclick="setLang('en')">EN</button>
+    </div>
   </header>
 
   <div class="card">
-    <h2><span class="icon" style="background:#fef0ea;color:var(--accent)">W</span>Farina <span class="sub">forza alveografica</span></h2>
+    <h2><span class="icon" style="background:#fef0ea;color:var(--accent)">W</span><span id="i-flour-title"></span> <span class="sub" id="i-flour-sub"></span></h2>
     <div class="w-display">
       <div class="w-num" id="w-num">280</div>
       <div class="w-cat" id="w-cat"></div>
@@ -117,120 +126,308 @@ footer{text-align:center;margin-top:18px;font-size:0.7rem;color:var(--muted);lin
   </div>
 
   <div class="card">
-    <h2><span class="icon" style="background:#eaf3f7;color:var(--blue)">&#9681;</span>Impasto <span class="sub">quantit&agrave; e parametri</span></h2>
+    <h2><span class="icon" style="background:#eaf3f7;color:var(--blue)">&#9681;</span><span id="i-dough-title"></span> <span class="sub" id="i-dough-sub"></span></h2>
     <div class="grid3">
-      <div class="field"><label>Panetti</label><input type="number" id="panetti" value="4" min="1" step="1"></div>
-      <div class="field"><label>Peso panetto</label><input type="number" id="peso" value="250" min="100" step="10"><span class="unit">g</span></div>
-      <div class="field"><label>Idratazione</label><input type="number" id="idro" value="65" min="50" max="90" step="1"><span class="unit">%</span></div>
+      <div class="field"><label id="i-balls"></label><input type="number" id="panetti" value="4" min="1" step="1"></div>
+      <div class="field"><label id="i-ball-weight"></label><input type="number" id="peso" value="250" min="100" step="10"><span class="unit">g</span></div>
+      <div class="field"><label id="i-hydration"></label><input type="number" id="idro" value="65" min="50" max="90" step="1"><span class="unit">%</span></div>
     </div>
     <div class="grid2" style="margin-top:10px">
-      <div class="field"><label>Sale per litro d'acqua</label><input type="number" id="sale" value="30" min="0" max="70" step="1"><span class="unit">g/L</span></div>
-      <div class="field"><label>Grassi per litro</label><input type="number" id="grassi" value="0" min="0" max="100" step="5"><span class="unit">g/L</span></div>
+      <div class="field"><label id="i-salt"></label><input type="number" id="sale" value="30" min="0" max="70" step="1"><span class="unit">g/L</span></div>
+      <div class="field"><label id="i-fats"></label><input type="number" id="grassi" value="0" min="0" max="100" step="5"><span class="unit">g/L</span></div>
     </div>
     <div style="margin-top:10px">
-      <label style="display:block;font-size:0.74rem;font-weight:500;color:var(--muted);margin-bottom:5px">Tipo lievito</label>
+      <label style="display:block;font-size:0.74rem;font-weight:500;color:var(--muted);margin-bottom:5px" id="i-yeast-type"></label>
       <div class="yeast-toggle">
-        <input type="radio" name="ytype" value="fresco" id="yt-fresco" checked><label for="yt-fresco">Fresco</label>
-        <input type="radio" name="ytype" value="secco" id="yt-secco"><label for="yt-secco">Secco</label>
+        <input type="radio" name="ytype" value="fresco" id="yt-fresco" checked><label for="yt-fresco" id="i-fresh"></label>
+        <input type="radio" name="ytype" value="secco" id="yt-secco"><label for="yt-secco" id="i-dry"></label>
       </div>
     </div>
   </div>
 
   <div class="card">
-    <h2><span class="icon" style="background:#fef0ea;color:#8c7a40">&#9790;</span>Temperature <span class="sub">ambiente e frigo</span></h2>
+    <h2><span class="icon" style="background:#fef0ea;color:#8c7a40">&#9790;</span><span id="i-temp-title"></span> <span class="sub" id="i-temp-sub"></span></h2>
     <div class="grid2">
-      <div class="field"><label>Temperatura ambiente (TA)</label><input type="number" id="t-amb" value="22" min="15" max="35" step="1"><span class="unit">&deg;C</span></div>
-      <div class="field"><label>Temperatura frigo</label><input type="number" id="t-frigo" value="4" min="1" max="10" step="1"><span class="unit">&deg;C</span></div>
+      <div class="field"><label id="i-temp-amb"></label><input type="number" id="t-amb" value="22" min="15" max="35" step="1"><span class="unit">&deg;C</span></div>
+      <div class="field"><label id="i-temp-fridge"></label><input type="number" id="t-frigo" value="4" min="1" max="10" step="1"><span class="unit">&deg;C</span></div>
     </div>
   </div>
 
   <div class="card">
-    <h2><span class="icon" style="background:var(--green-bg);color:var(--green)">&#8634;</span>Fasi fisse a TA <span class="sub">puntata e staglio</span></h2>
+    <h2><span class="icon" style="background:var(--green-bg);color:var(--green)">&#8634;</span><span id="i-phases-title"></span> <span class="sub" id="i-phases-sub"></span></h2>
     <div class="grid2">
-      <div class="field"><label>Puntata</label><input type="number" id="punt-h" value="1" min="0.5" max="6" step="0.5"><span class="unit">h</span></div>
-      <div class="field"><label>Staglio</label><input type="number" id="stag-h" value="1" min="0" max="2" step="0.25"><span class="unit">h</span></div>
+      <div class="field"><label id="i-bulk"></label><input type="number" id="punt-h" value="1" min="0.5" max="6" step="0.5"><span class="unit">h</span></div>
+      <div class="field"><label id="i-dividing"></label><input type="number" id="stag-h" value="1" min="0" max="2" step="0.25"><span class="unit">h</span></div>
     </div>
-    <p style="margin-top:10px;font-size:0.72rem;color:var(--muted);line-height:1.5">I valori di 1 h per puntata e staglio sono standard e adatti alla maggior parte degli impasti. La puntata resta comunque indicativa: il vero riferimento &egrave; il raddoppio di volume dell&rsquo;impasto in massa. Osservare l&rsquo;impasto e regolarsi di conseguenza, adattando il tempo alla temperatura ambiente e alla reattivit&agrave; del lievito.</p>
+    <p style="margin-top:10px;font-size:0.72rem;color:var(--muted);line-height:1.5" id="i-phases-note"></p>
   </div>
 
   <div class="card">
-    <h2><span class="icon" style="background:var(--blue-bg);color:var(--blue)">&#9202;</span>Piano stimato</h2>
+    <h2><span class="icon" style="background:var(--blue-bg);color:var(--blue)">&#9202;</span><span id="i-plan-title"></span></h2>
     <div class="timeline-wrap">
       <div class="timeline-bar" id="tbar"></div>
       <div class="timeline-labels">
-        <span><div class="dot" style="background:#b8452a"></div>Puntata</span>
-        <span><div class="dot" style="background:#2a6b8c"></div>Maturazione</span>
-        <span><div class="dot" style="background:#8c7a40"></div>Staglio</span>
-        <span><div class="dot" style="background:#3a7d5c"></div>Apretto</span>
+        <span><div class="dot" style="background:#b8452a"></div><span id="i-tl-bulk"></span></span>
+        <span><div class="dot" style="background:#2a6b8c"></div><span id="i-tl-mat"></span></span>
+        <span><div class="dot" style="background:#8c7a40"></div><span id="i-tl-div"></span></span>
+        <span><div class="dot" style="background:#3a7d5c"></div><span id="i-tl-proof"></span></span>
       </div>
     </div>
     <div class="chart-wrap">
       <canvas id="tempChart" height="210"></canvas>
     </div>
     <div class="detail-row">
-      <div>Ore totali: <strong id="d-tot"></strong></div>
-      <div>Frigo base (4 &deg;C): <strong id="d-emp"></strong></div>
-      <div>Frigo corretto (<span id="d-tf-label">4</span> &deg;C): <strong id="d-corr"></strong></div>
-      <div>Apretto (recupero termico): <strong id="d-apr"></strong></div>
+      <div><span id="i-d-tot-label"></span> <strong id="d-tot"></strong></div>
+      <div><span id="i-d-base-label"></span> <strong id="d-emp"></strong></div>
+      <div><span id="i-d-corr-label"></span>(<span id="d-tf-label">4</span> °C): <strong id="d-corr"></strong></div>
+      <div><span id="i-d-proof-label"></span> <strong id="d-apr"></strong></div>
     </div>
     <div class="info-box" id="info-box"><span class="info-icon">&#9432;</span><span id="info-msg"></span></div>
   </div>
 
   <div class="card result-card">
-    <h2>Risultati</h2>
+    <h2 id="i-results-title"></h2>
     <div class="result-grid">
-      <div class="result-item hl2"><span class="rlabel">Maturazione in frigo</span><span class="rvalue" id="r-mat"></span></div>
-      <div class="result-item hl2"><span class="rlabel">Apretto a TA</span><span class="rvalue" id="r-apr"></span></div>
-      <div class="result-item"><span class="rlabel">Farina</span><span class="rvalue" id="r-farina"></span></div>
-      <div class="result-item"><span class="rlabel">Acqua</span><span class="rvalue" id="r-acqua"></span></div>
-      <div class="result-item"><span class="rlabel">Sale</span><span class="rvalue" id="r-sale"></span></div>
-      <div class="result-item"><span class="rlabel">Grassi</span><span class="rvalue" id="r-grassi"></span></div>
-      <div class="result-item hl"><span class="rlabel" id="r-lievito-label">Lievito fresco</span><span class="rvalue" id="r-lievito"></span></div>
-      <div class="result-item"><span class="rlabel">Ore totali</span><span class="rvalue" id="r-tot"></span></div>
+      <div class="result-item hl2"><span class="rlabel" id="i-r-mat"></span><span class="rvalue" id="r-mat"></span></div>
+      <div class="result-item hl2"><span class="rlabel" id="i-r-proof"></span><span class="rvalue" id="r-apr"></span></div>
+      <div class="result-item"><span class="rlabel" id="i-r-flour"></span><span class="rvalue" id="r-farina"></span></div>
+      <div class="result-item"><span class="rlabel" id="i-r-water"></span><span class="rvalue" id="r-acqua"></span></div>
+      <div class="result-item"><span class="rlabel" id="i-r-salt"></span><span class="rvalue" id="r-sale"></span></div>
+      <div class="result-item"><span class="rlabel" id="i-r-fats"></span><span class="rvalue" id="r-grassi"></span></div>
+      <div class="result-item hl"><span class="rlabel" id="r-lievito-label"></span><span class="rvalue" id="r-lievito"></span></div>
+      <div class="result-item"><span class="rlabel" id="i-r-total"></span><span class="rvalue" id="r-tot"></span></div>
     </div>
   </div>
 
-  <footer>
-    Calcolapizza &mdash; calibrazione: W280 &rarr; 24 h, W360 &rarr; 48 h (a 4 &deg;C)<br>
-    Apretto da recupero termico (Newton, &tau; = 1,5 h) &middot; Lievito da Calcolapizza (&int; T<sup>2,5</sup> dt)<br>
-    <em>Stime indicative &mdash; dipendono anche da P/L, attivit&agrave; enzimatica e qualit&agrave; del glutine.</em>
-  </footer>
+  <footer id="i-footer"></footer>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-// ========== CONSTANTS ==========
-const TAU = 1.5;
-const Q10 = 2;
-const T_CAL = 4;   // calibration fridge temp
-const DT = 1/60;
+// ========== i18n ==========
+var LANG = 'it';
+var T = {
+  it: {
+    subtitle: 'Dato il W della farina, stima maturazione, apretto e dose lievito',
+    badge: 'Calibrato su dati empirici + simulazione termica',
+    flourTitle: 'Farina',
+    flourSub: 'forza alveografica',
+    doughTitle: 'Impasto',
+    doughSub: 'quantità e parametri',
+    balls: 'Panetti',
+    ballWeight: 'Peso panetto',
+    hydration: 'Idratazione',
+    salt: 'Sale per litro d\u2019acqua',
+    fats: 'Grassi per litro',
+    yeastType: 'Tipo lievito',
+    fresh: 'Fresco',
+    dry: 'Secco',
+    tempTitle: 'Temperature',
+    tempSub: 'ambiente e frigo',
+    tempAmb: 'Temperatura ambiente (TA)',
+    tempFridge: 'Temperatura frigo',
+    phasesTitle: 'Fasi fisse a TA',
+    phasesSub: 'puntata e staglio',
+    bulk: 'Puntata',
+    dividing: 'Staglio',
+    phasesNote: 'I valori di 1 h per puntata e staglio sono standard e adatti alla maggior parte degli impasti. La puntata resta comunque indicativa: il vero riferimento è il raddoppio di volume dell\u2019impasto in massa. Osservare l\u2019impasto e regolarsi di conseguenza, adattando il tempo alla temperatura ambiente e alla reattività del lievito.',
+    planTitle: 'Piano stimato',
+    tlBulk: 'Puntata',
+    tlMat: 'Maturazione',
+    tlDiv: 'Staglio',
+    tlProof: 'Apretto',
+    dTotLabel: 'Ore totali:',
+    dBaseLabel: 'Frigo base (4 °C):',
+    dCorrLabel: 'Frigo corretto ',
+    dProofLabel: 'Apretto (recupero termico):',
+    resultsTitle: 'Risultati',
+    rMat: 'Maturazione in frigo',
+    rProof: 'Apretto a TA',
+    rFlour: 'Farina',
+    rWater: 'Acqua',
+    rSalt: 'Sale',
+    rFats: 'Grassi',
+    rYeastFresh: 'Lievito fresco',
+    rYeastDry: 'Lievito secco',
+    rTotal: 'Ore totali',
+    footer: 'Calcolapizza \u2014 calibrazione: W280 \u2192 24 h, W360 \u2192 48 h (a 4 °C)<br>Apretto da recupero termico (Newton, \u03c4 = 1,5 h) \u00b7 Lievito da Calcolapizza (\u222b T<sup>2,5</sup> dt)<br><em>Stime indicative \u2014 dipendono anche da P/L, attività enzimatica e qualità del glutine.</em>',
+    chartXLabel: 'Ore',
+    // timeline bar names
+    barBulk: 'Puntata',
+    barFridge: 'Frigo',
+    barDiv: 'Staglio',
+    barProof: 'Apretto',
+    // W categories
+    wCat1: 'media \u2014 pane, focaccia',
+    wCat2: 'media-forte \u2014 maturazione 24h',
+    wCat3: 'forte \u2014 lunga maturazione in frigo',
+    wCat4: 'molto forte \u2014 maturazione 48h+',
+    // Info messages
+    infoWarn1a: 'Farina al limite inferiore (W',
+    infoWarn1b: '): maturazione breve (',
+    infoWarn1c: 'h frigo). Valutare se la farina regge il protocollo scelto.',
+    infoWarn2a: 'Maturazione molto lunga (',
+    infoWarn2b: 'h frigo). Verificare che la farina W',
+    infoWarn2c: ' regga effettivamente \u2014 il P/L e la qualità del glutine sono determinanti.',
+    infoOk: function(puntH,Tamb,frigoH,Tfrigo,stagH,aprettoH,totalH){
+      return 'Piano equilibrato: '+puntH+'h puntata a '+Tamb+'°C \u2192 '+frigoH+'h frigo a '+Tfrigo+'°C \u2192 '+stagH+'h staglio a '+Tamb+'°C \u2192 '+aprettoH+'h apretto a '+Tamb+'°C. Totale '+totalH.toFixed(1)+'h.';
+    }
+  },
+  en: {
+    subtitle: 'Given the flour W value, estimate maturation, proofing and yeast dose',
+    badge: 'Calibrated on empirical data + thermal simulation',
+    flourTitle: 'Flour',
+    flourSub: 'alveographic strength',
+    doughTitle: 'Dough',
+    doughSub: 'quantity and parameters',
+    balls: 'Dough balls',
+    ballWeight: 'Ball weight',
+    hydration: 'Hydration',
+    salt: 'Salt per litre of water',
+    fats: 'Fats per litre',
+    yeastType: 'Yeast type',
+    fresh: 'Fresh',
+    dry: 'Dry',
+    tempTitle: 'Temperatures',
+    tempSub: 'room and fridge',
+    tempAmb: 'Room temperature (RT)',
+    tempFridge: 'Fridge temperature',
+    phasesTitle: 'Fixed phases at RT',
+    phasesSub: 'bulk rise and dividing',
+    bulk: 'Bulk rise',
+    dividing: 'Dividing',
+    phasesNote: 'Values of 1 h for bulk rise and dividing are standard and suitable for most doughs. The bulk rise is still indicative: the real reference is the doubling of the dough\u2019s volume. Observe the dough and adjust accordingly, adapting the time to the room temperature and yeast reactivity.',
+    planTitle: 'Estimated plan',
+    tlBulk: 'Bulk rise',
+    tlMat: 'Maturation',
+    tlDiv: 'Dividing',
+    tlProof: 'Proofing',
+    dTotLabel: 'Total hours:',
+    dBaseLabel: 'Fridge base (4 °C):',
+    dCorrLabel: 'Fridge corrected ',
+    dProofLabel: 'Proofing (thermal recovery):',
+    resultsTitle: 'Results',
+    rMat: 'Fridge maturation',
+    rProof: 'Proofing at RT',
+    rFlour: 'Flour',
+    rWater: 'Water',
+    rSalt: 'Salt',
+    rFats: 'Fats',
+    rYeastFresh: 'Fresh yeast',
+    rYeastDry: 'Dry yeast',
+    rTotal: 'Total hours',
+    footer: 'Calcolapizza \u2014 calibration: W280 \u2192 24 h, W360 \u2192 48 h (at 4 °C)<br>Proofing from thermal recovery (Newton, \u03c4 = 1.5 h) \u00b7 Yeast from Calcolapizza (\u222b T<sup>2.5</sup> dt)<br><em>Indicative estimates \u2014 also depend on P/L, enzymatic activity and gluten quality.</em>',
+    chartXLabel: 'Hours',
+    barBulk: 'Bulk',
+    barFridge: 'Fridge',
+    barDiv: 'Dividing',
+    barProof: 'Proofing',
+    wCat1: 'medium \u2014 bread, focaccia',
+    wCat2: 'medium-strong \u2014 24h maturation',
+    wCat3: 'strong \u2014 long fridge maturation',
+    wCat4: 'very strong \u2014 48h+ maturation',
+    infoWarn1a: 'Flour at lower limit (W',
+    infoWarn1b: '): short maturation (',
+    infoWarn1c: 'h fridge). Check if the flour can handle the chosen protocol.',
+    infoWarn2a: 'Very long maturation (',
+    infoWarn2b: 'h fridge). Verify that W',
+    infoWarn2c: ' flour can actually handle it \u2014 P/L and gluten quality are decisive.',
+    infoOk: function(puntH,Tamb,frigoH,Tfrigo,stagH,aprettoH,totalH){
+      return 'Balanced plan: '+puntH+'h bulk at '+Tamb+'°C \u2192 '+frigoH+'h fridge at '+Tfrigo+'°C \u2192 '+stagH+'h dividing at '+Tamb+'°C \u2192 '+aprettoH+'h proofing at '+Tamb+'°C. Total '+totalH.toFixed(1)+'h.';
+    }
+  }
+};
 
-// Empirical: W = A + B * ln(h_frigo@4C)
-// W280 -> 24h, W360 -> 48h
-const B_CAL = 80 / Math.log(48/24);     // 115.42
-const A_CAL = 280 - B_CAL * Math.log(24); // -86.76
+function t(key){ return T[LANG][key] || T['it'][key] || key; }
+
+function applyLang(){
+  document.documentElement.lang = LANG;
+  document.getElementById('btn-it').className = LANG==='it'?'active':'';
+  document.getElementById('btn-en').className = LANG==='en'?'active':'';
+  document.getElementById('i-subtitle').textContent = t('subtitle');
+  document.getElementById('i-badge').textContent = t('badge');
+  document.getElementById('i-flour-title').textContent = t('flourTitle');
+  document.getElementById('i-flour-sub').textContent = t('flourSub');
+  document.getElementById('i-dough-title').textContent = t('doughTitle');
+  document.getElementById('i-dough-sub').textContent = t('doughSub');
+  document.getElementById('i-balls').textContent = t('balls');
+  document.getElementById('i-ball-weight').textContent = t('ballWeight');
+  document.getElementById('i-hydration').textContent = t('hydration');
+  document.getElementById('i-salt').textContent = t('salt');
+  document.getElementById('i-fats').textContent = t('fats');
+  document.getElementById('i-yeast-type').textContent = t('yeastType');
+  document.getElementById('i-fresh').textContent = t('fresh');
+  document.getElementById('i-dry').textContent = t('dry');
+  document.getElementById('i-temp-title').textContent = t('tempTitle');
+  document.getElementById('i-temp-sub').textContent = t('tempSub');
+  document.getElementById('i-temp-amb').textContent = t('tempAmb');
+  document.getElementById('i-temp-fridge').textContent = t('tempFridge');
+  document.getElementById('i-phases-title').textContent = t('phasesTitle');
+  document.getElementById('i-phases-sub').textContent = t('phasesSub');
+  document.getElementById('i-bulk').textContent = t('bulk');
+  document.getElementById('i-dividing').textContent = t('dividing');
+  document.getElementById('i-phases-note').textContent = t('phasesNote');
+  document.getElementById('i-plan-title').textContent = t('planTitle');
+  document.getElementById('i-tl-bulk').textContent = t('tlBulk');
+  document.getElementById('i-tl-mat').textContent = t('tlMat');
+  document.getElementById('i-tl-div').textContent = t('tlDiv');
+  document.getElementById('i-tl-proof').textContent = t('tlProof');
+  document.getElementById('i-d-tot-label').textContent = t('dTotLabel');
+  document.getElementById('i-d-base-label').textContent = t('dBaseLabel');
+  document.getElementById('i-d-corr-label').textContent = t('dCorrLabel');
+  document.getElementById('i-d-proof-label').textContent = t('dProofLabel');
+  document.getElementById('i-results-title').textContent = t('resultsTitle');
+  document.getElementById('i-r-mat').textContent = t('rMat');
+  document.getElementById('i-r-proof').textContent = t('rProof');
+  document.getElementById('i-r-flour').textContent = t('rFlour');
+  document.getElementById('i-r-water').textContent = t('rWater');
+  document.getElementById('i-r-salt').textContent = t('rSalt');
+  document.getElementById('i-r-fats').textContent = t('rFats');
+  document.getElementById('i-r-total').textContent = t('rTotal');
+  document.getElementById('i-footer').innerHTML = t('footer');
+  // Update chart axis label
+  if(chart && chart.options){
+    chart.options.scales.x.title.text = t('chartXLabel');
+    chart.update('none');
+  }
+  // Recalc to refresh dynamic text (info box, yeast label, timeline bar)
+  calc();
+}
+
+function setLang(lang){
+  LANG = lang;
+  applyLang();
+}
+
+function detectLang(){
+  var nav = (navigator.language || navigator.userLanguage || 'it').toLowerCase();
+  if(nav.startsWith('en')) return 'en';
+  return 'it';
+}
+
+// ========== CONSTANTS ==========
+var TAU = 1.5;
+var Q10 = 2;
+var T_CAL = 4;
+var DT = 1/60;
+var B_CAL = 80 / Math.log(48/24);
+var A_CAL = 280 - B_CAL * Math.log(24);
 
 // ========== EMPIRICAL FRIGO ==========
 function frigoBase(W) {
   return Math.exp((W - A_CAL) / B_CAL);
 }
-
 function enzymeRate(T) {
   return Math.pow(Q10, (T - 25) / 10);
 }
-
 function frigoCorrected(W, Tf) {
-  // Scale base hours (at 4°C) to actual fridge temp
-  // Higher Tf => faster enzymes => fewer hours
   return frigoBase(W) * enzymeRate(T_CAL) / enzymeRate(Tf);
 }
 
 // ========== APRETTO ==========
 function calcApretto(Tamb, Tfrigo) {
-  // Time for dough to reach Tamb - 2°C (Newton cooling/warming)
   var dT = Tamb - Tfrigo;
   var recovery = dT > 2 ? TAU * Math.log(dT / 2) : 0.5;
-  // Add ~1h for final fermentation at warm temp
   var apr = recovery + 1.0;
   apr = Math.round(apr * 2) / 2;
   return Math.max(2, Math.min(6, apr));
@@ -238,28 +435,28 @@ function calcApretto(Tamb, Tfrigo) {
 
 // ========== W CATEGORY ==========
 function wCat(W) {
-  if (W < 260) return 'media — pane, focaccia';
-  if (W < 300) return 'media-forte — maturazione 24h';
-  if (W < 340) return 'forte — lunga maturazione in frigo';
-  return 'molto forte — maturazione 48h+';
+  if (W < 260) return t('wCat1');
+  if (W < 300) return t('wCat2');
+  if (W < 340) return t('wCat3');
+  return t('wCat4');
 }
 
 // ========== THERMAL SIM ==========
 function simulate(stages) {
   var pts = [];
   if (!stages.length) return pts;
-  var Td = stages[0].temp, t = 0;
+  var Td = stages[0].temp, tt = 0;
   for (var s = 0; s < stages.length; s++) {
     var st = stages[s];
     var steps = Math.max(1, Math.round(st.ore / DT));
     var dt = st.ore / steps;
     for (var j = 0; j < steps; j++) {
-      pts.push({t:t, Td:Td, Te:st.temp, idx:st.idx});
+      pts.push({t:tt, Td:Td, Te:st.temp, idx:st.idx});
       Td = st.temp + (Td - st.temp) * Math.exp(-dt / TAU);
-      t += dt;
+      tt += dt;
     }
   }
-  pts.push({t:t, Td:Td, Te:stages[stages.length-1].temp, idx:stages[stages.length-1].idx});
+  pts.push({t:tt, Td:Td, Te:stages[stages.length-1].temp, idx:stages[stages.length-1].idx});
   return pts;
 }
 
@@ -291,7 +488,7 @@ function initChart() {
     options:{
       responsive:true,maintainAspectRatio:false,
       scales:{
-        x:{type:'linear',title:{display:true,text:'Ore',font:{size:11}},grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:10}}},
+        x:{type:'linear',title:{display:true,text:t('chartXLabel'),font:{size:11}},grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:10}}},
         y:{title:{display:true,text:'°C',font:{size:11}},grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:10}}}
       },
       plugins:{legend:{display:false}},
@@ -316,7 +513,7 @@ function drawChart(pts) {
 function drawTimeline(stages, totalH) {
   var bar=document.getElementById('tbar');
   var cls={1:'tbar-punt',2:'tbar-mat',3:'tbar-stag',4:'tbar-apr'};
-  var names={1:'Puntata',2:'Frigo',3:'Staglio',4:'Apretto'};
+  var names={1:t('barBulk'),2:t('barFridge'),3:t('barDiv'),4:t('barProof')};
   var html='';
   for (var i=0;i<stages.length;i++){
     var s=stages[i];
@@ -344,16 +541,13 @@ function calc() {
   document.getElementById('w-num').textContent=W;
   document.getElementById('w-cat').textContent=wCat(W);
 
-  // Frigo hours
   var hBase=frigoBase(W);
   var hCorr=frigoCorrected(W,Tfrigo);
   var frigoH=Math.round(hCorr*2)/2;
   frigoH=Math.max(frigoH,1);
 
-  // Apretto
   var aprettoH=calcApretto(Tamb,Tfrigo);
 
-  // Stages
   var stages=[
     {ore:puntH,temp:Tamb,idx:1},
     {ore:frigoH,temp:Tfrigo,idx:2},
@@ -363,30 +557,28 @@ function calc() {
   var totalH=0;
   for(var i=0;i<stages.length;i++) totalH+=stages[i].ore;
 
-  // Simulate
   var pts=simulate(stages);
   drawChart(pts);
   drawTimeline(stages,totalH);
 
-  // Details
   document.getElementById('d-tot').textContent=totalH.toFixed(1)+' h';
   document.getElementById('d-emp').textContent=hBase.toFixed(1)+' h';
   document.getElementById('d-tf-label').textContent=Tfrigo;
   document.getElementById('d-corr').textContent=frigoH.toFixed(1)+' h';
   document.getElementById('d-apr').textContent=aprettoH.toFixed(1)+' h';
 
-  // Info
+  // Info box
   var infoBox=document.getElementById('info-box');
   var infoMsg=document.getElementById('info-msg');
   if(W<=220){
     infoBox.className='info-box warn';
-    infoMsg.textContent='Farina al limite inferiore (W'+W+'): maturazione breve ('+frigoH+'h frigo). Valutare se la farina regge il protocollo scelto.';
+    infoMsg.textContent=t('infoWarn1a')+W+t('infoWarn1b')+frigoH+t('infoWarn1c');
   } else if(frigoH>72){
     infoBox.className='info-box warn';
-    infoMsg.textContent='Maturazione molto lunga ('+frigoH+'h frigo). Verificare che la farina W'+W+' regga effettivamente \u2014 il P/L e la qualit\u00e0 del glutine sono determinanti.';
+    infoMsg.textContent=t('infoWarn2a')+frigoH+t('infoWarn2b')+W+t('infoWarn2c');
   } else {
     infoBox.className='info-box ok';
-    infoMsg.textContent='Piano equilibrato: '+puntH+'h puntata a '+Tamb+'\u00b0C \u2192 '+frigoH+'h frigo a '+Tfrigo+'\u00b0C \u2192 '+stagH+'h staglio a '+Tamb+'\u00b0C \u2192 '+aprettoH+'h apretto a '+Tamb+'\u00b0C. Totale '+totalH.toFixed(1)+'h.';
+    infoMsg.textContent=t('infoOk')(puntH,Tamb,frigoH,Tfrigo,stagH,aprettoH,totalH);
   }
 
   // Ingredients
@@ -405,8 +597,7 @@ function calc() {
   var isSecco=document.querySelector('input[name="ytype"]:checked').value==='secco';
   var lievito=isSecco?lievitoFresco/2:lievitoFresco;
 
-  // Render
-  document.getElementById('r-lievito-label').textContent=isSecco?'Lievito secco':'Lievito fresco';
+  document.getElementById('r-lievito-label').textContent=isSecco?t('rYeastDry'):t('rYeastFresh');
   document.getElementById('r-mat').innerHTML=frigoH.toFixed(1).replace('.',',')+' <small>h</small>';
   document.getElementById('r-apr').innerHTML=aprettoH.toFixed(1).replace('.',',')+' <small>h</small>';
   document.getElementById('r-farina').innerHTML=Math.round(farina)+' <small>g</small>';
@@ -421,12 +612,14 @@ function calc() {
   }
 }
 
+// ========== INIT ==========
+LANG = detectLang();
 initChart();
+applyLang();
 document.querySelectorAll('input').forEach(function(el){
   el.addEventListener('input',calc);
   el.addEventListener('change',calc);
 });
-calc();
 </script>
 </body>
 </html>
