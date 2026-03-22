@@ -178,7 +178,6 @@ footer{text-align:center;margin-top:18px;font-size:0.7rem;color:var(--muted);lin
     </div>
     <div class="detail-row">
       <div><span id="i-d-tot-label"></span> <strong id="d-tot"></strong></div>
-      <div><span id="i-d-base-label"></span> <strong id="d-emp"></strong></div>
       <div><span id="i-d-corr-label"></span>(<span id="d-tf-label">4</span> °C): <strong id="d-corr"></strong></div>
       <div><span id="i-d-proof-label"></span> <strong id="d-apr"></strong></div>
     </div>
@@ -373,7 +372,6 @@ function applyLang(){
   document.getElementById('i-tl-div').textContent = t('tlDiv');
   document.getElementById('i-tl-proof').textContent = t('tlProof');
   document.getElementById('i-d-tot-label').textContent = t('dTotLabel');
-  document.getElementById('i-d-base-label').textContent = t('dBaseLabel');
   document.getElementById('i-d-corr-label').textContent = t('dCorrLabel');
   document.getElementById('i-d-proof-label').textContent = t('dProofLabel');
   document.getElementById('i-results-title').textContent = t('resultsTitle');
@@ -562,7 +560,6 @@ function calc() {
   drawTimeline(stages,totalH);
 
   document.getElementById('d-tot').textContent=totalH.toFixed(1)+' h';
-  document.getElementById('d-emp').textContent=hBase.toFixed(1)+' h';
   document.getElementById('d-tf-label').textContent=Tfrigo;
   document.getElementById('d-corr').textContent=frigoH.toFixed(1)+' h';
   document.getElementById('d-apr').textContent=aprettoH.toFixed(1)+' h';
