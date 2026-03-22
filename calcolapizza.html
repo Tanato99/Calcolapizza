@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calcolapizza</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,300&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f7f2eb;--card:#fffcf8;--text:#2a1a0e;--muted:#8c7a68;--accent:#b8452a;
+  --accent2:#d4763a;--border:#e4d9cb;--input-bg:#fdfaf5;
+  --green:#3a7d5c;--green-bg:#eaf5ee;--amber:#b8862a;--amber-bg:#fdf5e6;
+  --red:#b83a3a;--red-bg:#fdf0f0;
+  --blue:#2a6b8c;--blue-bg:#eaf3f7;
+  --shadow:0 1px 8px rgba(44,24,16,0.05);
+  --radius:14px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:20px 14px}
+.wrap{max-width:780px;margin:0 auto}
+
+header{text-align:center;margin-bottom:28px;position:relative}
+header::before{content:'';position:absolute;top:-20px;left:50%;transform:translateX(-50%);width:120px;height:3px;background:linear-gradient(90deg,transparent,var(--accent),transparent);border-radius:2px}
+header h1{font-family:'Fraunces',serif;font-size:2.4rem;color:var(--accent);letter-spacing:-0.03em;line-height:1.1;font-weight:700;margin-top:8px}
+header p{color:var(--muted);font-size:0.82rem;margin-top:6px;letter-spacing:0.02em}
+.badge{display:inline-block;background:var(--green-bg);color:var(--green);font-size:0.68rem;font-weight:600;padding:3px 12px;border-radius:20px;margin-top:8px;letter-spacing:0.05em;text-transform:uppercase}
+
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px 20px;margin-bottom:14px;border:1px solid var(--border)}
+.card h2{font-family:'Fraunces',serif;font-size:1.1rem;color:var(--text);margin-bottom:14px;padding-bottom:10px;border-bottom:1.5px solid var(--border);font-weight:500;display:flex;align-items:center;gap:8px}
+.card h2 .icon{width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;flex-shrink:0}
+.card h2 span.sub{font-size:0.72rem;color:var(--muted);font-family:'DM Sans',sans-serif;font-weight:400;margin-left:auto}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px 16px}
+@media(max-width:560px){.grid2,.grid3{grid-template-columns:1fr 1fr}}
+@media(max-width:400px){.grid2,.grid3{grid-template-columns:1fr}}
+
+.field{position:relative}
+.field label{display:block;font-size:0.74rem;font-weight:500;color:var(--muted);margin-bottom:3px}
+.field input[type=number]{
+  width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:10px;
+  font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--text);background:var(--input-bg);
+  transition:border-color 0.2s,box-shadow 0.2s;outline:none;-moz-appearance:textfield
+}
+.field input::-webkit-outer-spin-button,.field input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(184,69,42,0.08)}
+.field .unit{position:absolute;right:11px;top:26px;font-size:0.74rem;color:var(--muted);pointer-events:none}
+
+.w-slider-wrap{margin:4px 0 8px}
+.w-slider{width:100%;-webkit-appearance:none;appearance:none;height:6px;border-radius:3px;outline:none;background:#c4a265}
+.w-slider::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--card);border:2.5px solid var(--accent);cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.15)}
+.w-slider::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--card);border:2.5px solid var(--accent);cursor:pointer}
+.w-display{display:flex;align-items:baseline;gap:8px;margin-top:4px}
+.w-display .w-num{font-family:'Fraunces',serif;font-size:2rem;color:var(--accent);font-weight:700;letter-spacing:-0.02em}
+.w-display .w-cat{font-size:0.76rem;color:var(--muted)}
+.w-marks{display:flex;justify-content:space-between;font-size:0.62rem;color:var(--muted);margin-top:2px;padding:0 2px}
+.yeast-toggle{display:flex;gap:0;border:1.5px solid var(--border);border-radius:10px;overflow:hidden;width:fit-content}
+.yeast-toggle input{display:none}
+.yeast-toggle label{padding:7px 18px;font-size:0.82rem;cursor:pointer;transition:all 0.2s;color:var(--muted);background:var(--input-bg);font-weight:500}
+.yeast-toggle input:checked+label{background:var(--accent);color:#fff;font-weight:600}
+
+.timeline-wrap{position:relative;margin:12px 0 4px;background:var(--input-bg);border-radius:12px;border:1px solid var(--border);padding:16px 14px 10px;overflow:hidden}
+.timeline-bar{display:flex;height:44px;border-radius:8px;overflow:hidden;margin-bottom:10px;border:1px solid var(--border)}
+.tbar-seg{display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:0.66rem;font-weight:600;color:#fff;transition:width 0.4s ease;min-width:0;overflow:hidden;white-space:nowrap;padding:0 3px;line-height:1.3}
+.tbar-seg .tbar-sub{font-weight:400;font-size:0.58rem;opacity:0.8}
+.tbar-punt{background:#b8452a}.tbar-mat{background:#2a6b8c}.tbar-stag{background:#8c7a40}.tbar-apr{background:#3a7d5c}
+.timeline-labels{display:flex;font-size:0.7rem;color:var(--muted);gap:12px;flex-wrap:wrap;justify-content:center}
+.timeline-labels span{display:flex;align-items:center;gap:4px}
+.timeline-labels .dot{width:8px;height:8px;border-radius:3px;flex-shrink:0}
+
+.result-card{background:linear-gradient(135deg,#fdf8f2 0%,#f3ebe0 100%);border:2px solid var(--accent2);position:relative;overflow:hidden}
+.result-card::before{content:'';position:absolute;top:-50px;right:-50px;width:140px;height:140px;background:radial-gradient(circle,rgba(184,69,42,0.05) 0%,transparent 70%);border-radius:50%}
+.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:480px){.result-grid{grid-template-columns:1fr}}
+.result-item{background:var(--card);border-radius:12px;padding:12px 14px;border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;transition:transform 0.15s}
+.result-item:hover{transform:translateY(-1px)}
+.result-item .rlabel{font-size:0.78rem;color:var(--muted);font-weight:500}
+.result-item .rvalue{font-family:'Fraunces',serif;font-size:1.2rem;color:var(--text);white-space:nowrap;font-weight:500}
+.result-item .rvalue small{font-size:0.66rem;font-family:'DM Sans',sans-serif;color:var(--muted);margin-left:2px}
+.result-item.hl{background:linear-gradient(135deg,#b8452a 0%,#d4763a 100%);border-color:transparent}
+.result-item.hl .rlabel{color:rgba(255,255,255,0.75)}.result-item.hl .rvalue{color:#fff}.result-item.hl .rvalue small{color:rgba(255,255,255,0.7)}
+.result-item.hl2{background:linear-gradient(135deg,#2a6b8c 0%,#3a8faa 100%);border-color:transparent}
+.result-item.hl2 .rlabel{color:rgba(255,255,255,0.75)}.result-item.hl2 .rvalue{color:#fff}.result-item.hl2 .rvalue small{color:rgba(255,255,255,0.7)}
+
+.info-box{margin-top:10px;padding:10px 14px;border-radius:10px;border:1px solid var(--border);font-size:0.76rem;color:var(--muted);line-height:1.6;display:flex;gap:8px;align-items:flex-start}
+.info-box.ok{background:var(--green-bg);border-color:rgba(58,125,92,0.2);color:var(--green)}
+.info-box.warn{background:var(--amber-bg);border-color:rgba(184,134,42,0.2);color:#7a6520}
+.info-box .info-icon{font-size:1rem;flex-shrink:0;line-height:1}
+
+.chart-wrap{position:relative;margin-top:12px;height:210px}
+.chart-wrap canvas{width:100%;display:block}
+
+.detail-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:0.76rem;color:var(--muted)}
+.detail-row strong{color:var(--text)}
+
+footer{text-align:center;margin-top:18px;font-size:0.7rem;color:var(--muted);line-height:1.6}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Calcolapizza</h1>
+    <p>Dato il W della farina, stima maturazione, apretto e dose lievito</p>
+    <div class="badge">Calibrato su dati empirici + simulazione termica</div>
+  </header>
+
+  <div class="card">
+    <h2><span class="icon" style="background:#fef0ea;color:var(--accent)">W</span>Farina <span class="sub">forza alveografica</span></h2>
+    <div class="w-display">
+      <div class="w-num" id="w-num">280</div>
+      <div class="w-cat" id="w-cat"></div>
+    </div>
+    <div class="w-slider-wrap">
+      <input type="range" class="w-slider" id="w-val" min="220" max="380" value="280" step="10">
+      <div class="w-marks"><span>220</span><span>260</span><span>300</span><span>340</span><span>380</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="icon" style="background:#eaf3f7;color:var(--blue)">&#9681;</span>Impasto <span class="sub">quantit&agrave; e parametri</span></h2>
+    <div class="grid3">
+      <div class="field"><label>Panetti</label><input type="number" id="panetti" value="4" min="1" step="1"></div>
+      <div class="field"><label>Peso panetto</label><input type="number" id="peso" value="250" min="100" step="10"><span class="unit">g</span></div>
+      <div class="field"><label>Idratazione</label><input type="number" id="idro" value="65" min="50" max="90" step="1"><span class="unit">%</span></div>
+    </div>
+    <div class="grid2" style="margin-top:10px">
+      <div class="field"><label>Sale per litro d'acqua</label><input type="number" id="sale" value="30" min="0" max="70" step="1"><span class="unit">g/L</span></div>
+      <div class="field"><label>Grassi per litro</label><input type="number" id="grassi" value="0" min="0" max="100" step="5"><span class="unit">g/L</span></div>
+    </div>
+    <div style="margin-top:10px">
+      <label style="display:block;font-size:0.74rem;font-weight:500;color:var(--muted);margin-bottom:5px">Tipo lievito</label>
+      <div class="yeast-toggle">
+        <input type="radio" name="ytype" value="fresco" id="yt-fresco" checked><label for="yt-fresco">Fresco</label>
+        <input type="radio" name="ytype" value="secco" id="yt-secco"><label for="yt-secco">Secco</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="icon" style="background:#fef0ea;color:#8c7a40">&#9790;</span>Temperature <span class="sub">ambiente e frigo</span></h2>
+    <div class="grid2">
+      <div class="field"><label>Temperatura ambiente (TA)</label><input type="number" id="t-amb" value="22" min="15" max="35" step="1"><span class="unit">&deg;C</span></div>
+      <div class="field"><label>Temperatura frigo</label><input type="number" id="t-frigo" value="4" min="1" max="10" step="1"><span class="unit">&deg;C</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="icon" style="background:var(--green-bg);color:var(--green)">&#8634;</span>Fasi fisse a TA <span class="sub">puntata e staglio</span></h2>
+    <div class="grid2">
+      <div class="field"><label>Puntata</label><input type="number" id="punt-h" value="1" min="0.5" max="6" step="0.5"><span class="unit">h</span></div>
+      <div class="field"><label>Staglio</label><input type="number" id="stag-h" value="1" min="0" max="2" step="0.25"><span class="unit">h</span></div>
+    </div>
+    <p style="margin-top:10px;font-size:0.72rem;color:var(--muted);line-height:1.5">I valori di 1 h per puntata e staglio sono standard e adatti alla maggior parte degli impasti. La puntata resta comunque indicativa: il vero riferimento &egrave; il raddoppio di volume dell&rsquo;impasto in massa. Osservare l&rsquo;impasto e regolarsi di conseguenza, adattando il tempo alla temperatura ambiente e alla reattivit&agrave; del lievito.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="icon" style="background:var(--blue-bg);color:var(--blue)">&#9202;</span>Piano stimato</h2>
+    <div class="timeline-wrap">
+      <div class="timeline-bar" id="tbar"></div>
+      <div class="timeline-labels">
+        <span><div class="dot" style="background:#b8452a"></div>Puntata</span>
+        <span><div class="dot" style="background:#2a6b8c"></div>Maturazione</span>
+        <span><div class="dot" style="background:#8c7a40"></div>Staglio</span>
+        <span><div class="dot" style="background:#3a7d5c"></div>Apretto</span>
+      </div>
+    </div>
+    <div class="chart-wrap">
+      <canvas id="tempChart" height="210"></canvas>
+    </div>
+    <div class="detail-row">
+      <div>Ore totali: <strong id="d-tot"></strong></div>
+      <div>Frigo base (4 &deg;C): <strong id="d-emp"></strong></div>
+      <div>Frigo corretto (<span id="d-tf-label">4</span> &deg;C): <strong id="d-corr"></strong></div>
+      <div>Apretto (recupero termico): <strong id="d-apr"></strong></div>
+    </div>
+    <div class="info-box" id="info-box"><span class="info-icon">&#9432;</span><span id="info-msg"></span></div>
+  </div>
+
+  <div class="card result-card">
+    <h2>Risultati</h2>
+    <div class="result-grid">
+      <div class="result-item hl2"><span class="rlabel">Maturazione in frigo</span><span class="rvalue" id="r-mat"></span></div>
+      <div class="result-item hl2"><span class="rlabel">Apretto a TA</span><span class="rvalue" id="r-apr"></span></div>
+      <div class="result-item"><span class="rlabel">Farina</span><span class="rvalue" id="r-farina"></span></div>
+      <div class="result-item"><span class="rlabel">Acqua</span><span class="rvalue" id="r-acqua"></span></div>
+      <div class="result-item"><span class="rlabel">Sale</span><span class="rvalue" id="r-sale"></span></div>
+      <div class="result-item"><span class="rlabel">Grassi</span><span class="rvalue" id="r-grassi"></span></div>
+      <div class="result-item hl"><span class="rlabel" id="r-lievito-label">Lievito fresco</span><span class="rvalue" id="r-lievito"></span></div>
+      <div class="result-item"><span class="rlabel">Ore totali</span><span class="rvalue" id="r-tot"></span></div>
+    </div>
+  </div>
+
+  <footer>
+    Calcolapizza &mdash; calibrazione: W280 &rarr; 24 h, W360 &rarr; 48 h (a 4 &deg;C)<br>
+    Apretto da recupero termico (Newton, &tau; = 1,5 h) &middot; Lievito da Calcolapizza (&int; T<sup>2,5</sup> dt)<br>
+    <em>Stime indicative &mdash; dipendono anche da P/L, attivit&agrave; enzimatica e qualit&agrave; del glutine.</em>
+  </footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+// ========== CONSTANTS ==========
+const TAU = 1.5;
+const Q10 = 2;
+const T_CAL = 4;   // calibration fridge temp
+const DT = 1/60;
+
+// Empirical: W = A + B * ln(h_frigo@4C)
+// W280 -> 24h, W360 -> 48h
+const B_CAL = 80 / Math.log(48/24);     // 115.42
+const A_CAL = 280 - B_CAL * Math.log(24); // -86.76
+
+// ========== EMPIRICAL FRIGO ==========
+function frigoBase(W) {
+  return Math.exp((W - A_CAL) / B_CAL);
+}
+
+function enzymeRate(T) {
+  return Math.pow(Q10, (T - 25) / 10);
+}
+
+function frigoCorrected(W, Tf) {
+  // Scale base hours (at 4°C) to actual fridge temp
+  // Higher Tf => faster enzymes => fewer hours
+  return frigoBase(W) * enzymeRate(T_CAL) / enzymeRate(Tf);
+}
+
+// ========== APRETTO ==========
+function calcApretto(Tamb, Tfrigo) {
+  // Time for dough to reach Tamb - 2°C (Newton cooling/warming)
+  var dT = Tamb - Tfrigo;
+  var recovery = dT > 2 ? TAU * Math.log(dT / 2) : 0.5;
+  // Add ~1h for final fermentation at warm temp
+  var apr = recovery + 1.0;
+  apr = Math.round(apr * 2) / 2;
+  return Math.max(2, Math.min(6, apr));
+}
+
+// ========== W CATEGORY ==========
+function wCat(W) {
+  if (W < 260) return 'media — pane, focaccia';
+  if (W < 300) return 'media-forte — maturazione 24h';
+  if (W < 340) return 'forte — lunga maturazione in frigo';
+  return 'molto forte — maturazione 48h+';
+}
+
+// ========== THERMAL SIM ==========
+function simulate(stages) {
+  var pts = [];
+  if (!stages.length) return pts;
+  var Td = stages[0].temp, t = 0;
+  for (var s = 0; s < stages.length; s++) {
+    var st = stages[s];
+    var steps = Math.max(1, Math.round(st.ore / DT));
+    var dt = st.ore / steps;
+    for (var j = 0; j < steps; j++) {
+      pts.push({t:t, Td:Td, Te:st.temp, idx:st.idx});
+      Td = st.temp + (Td - st.temp) * Math.exp(-dt / TAU);
+      t += dt;
+    }
+  }
+  pts.push({t:t, Td:Td, Te:stages[stages.length-1].temp, idx:stages[stages.length-1].idx});
+  return pts;
+}
+
+function fermFactor(pts) {
+  var integral = 0, totalH = 0;
+  for (var i = 0; i < pts.length - 1; i++) {
+    var dt = pts[i+1].t - pts[i].t;
+    integral += Math.pow(Math.max(pts[i].Td, 0.1), 2.5) * dt;
+    totalH += dt;
+  }
+  if (totalH <= 0) return 0.001;
+  return integral * Math.pow(totalH, 0.2);
+}
+
+// ========== CHART ==========
+var chart = null;
+function initChart() {
+  if (chart) chart.destroy();
+  chart = new Chart(document.getElementById('tempChart'), {
+    type:'line',
+    data:{datasets:[
+      {label:'T impasto',data:[],borderWidth:2.5,pointRadius:0,tension:0.3,
+        segment:{borderColor:function(ctx){
+          var c={1:'#b8452a',2:'#2a6b8c',3:'#8c7a40',4:'#3a7d5c'};
+          return c[ctx.p0.raw && ctx.p0.raw.idx]||'#888';
+        }},parsing:false},
+      {label:'T impostata',data:[],borderColor:'#bbb',borderDash:[5,4],borderWidth:1,pointRadius:0,tension:0}
+    ]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      scales:{
+        x:{type:'linear',title:{display:true,text:'Ore',font:{size:11}},grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:10}}},
+        y:{title:{display:true,text:'°C',font:{size:11}},grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:10}}}
+      },
+      plugins:{legend:{display:false}},
+      animation:{duration:200}
+    }
+  });
+}
+
+function drawChart(pts) {
+  if (!pts.length) return;
+  var skip = Math.max(1, Math.floor(pts.length/500));
+  var d1=[], d2=[];
+  for (var i=0; i<pts.length; i+=skip) {
+    d1.push({x:+(pts[i].t.toFixed(3)),y:+(pts[i].Td.toFixed(2)),idx:pts[i].idx});
+    d2.push({x:+(pts[i].t.toFixed(3)),y:pts[i].Te});
+  }
+  chart.data.datasets[0].data=d1;
+  chart.data.datasets[1].data=d2;
+  chart.update('none');
+}
+
+function drawTimeline(stages, totalH) {
+  var bar=document.getElementById('tbar');
+  var cls={1:'tbar-punt',2:'tbar-mat',3:'tbar-stag',4:'tbar-apr'};
+  var names={1:'Puntata',2:'Frigo',3:'Staglio',4:'Apretto'};
+  var html='';
+  for (var i=0;i<stages.length;i++){
+    var s=stages[i];
+    var pct=s.ore/totalH*100;
+    var lbl=pct>10?s.ore.toFixed(1)+'h':(pct>5?Math.round(s.ore)+'h':'');
+    var sub=pct>14?'<span class="tbar-sub">'+names[s.idx]+'</span>':'';
+    html+='<div class="'+cls[s.idx]+' tbar-seg" style="width:'+pct+'%">'+lbl+sub+'</div>';
+  }
+  bar.innerHTML=html;
+}
+
+// ========== MAIN ==========
+function calc() {
+  var W=+document.getElementById('w-val').value;
+  var panetti=+document.getElementById('panetti').value;
+  var peso=+document.getElementById('peso').value;
+  var idro=+document.getElementById('idro').value;
+  var saleL=+document.getElementById('sale').value;
+  var grassiL=+document.getElementById('grassi').value;
+  var Tamb=+document.getElementById('t-amb').value;
+  var Tfrigo=+document.getElementById('t-frigo').value;
+  var puntH=+document.getElementById('punt-h').value;
+  var stagH=+document.getElementById('stag-h').value;
+
+  document.getElementById('w-num').textContent=W;
+  document.getElementById('w-cat').textContent=wCat(W);
+
+  // Frigo hours
+  var hBase=frigoBase(W);
+  var hCorr=frigoCorrected(W,Tfrigo);
+  var frigoH=Math.round(hCorr*2)/2;
+  frigoH=Math.max(frigoH,1);
+
+  // Apretto
+  var aprettoH=calcApretto(Tamb,Tfrigo);
+
+  // Stages
+  var stages=[
+    {ore:puntH,temp:Tamb,idx:1},
+    {ore:frigoH,temp:Tfrigo,idx:2},
+    {ore:stagH,temp:Tamb,idx:3},
+    {ore:aprettoH,temp:Tamb,idx:4}
+  ];
+  var totalH=0;
+  for(var i=0;i<stages.length;i++) totalH+=stages[i].ore;
+
+  // Simulate
+  var pts=simulate(stages);
+  drawChart(pts);
+  drawTimeline(stages,totalH);
+
+  // Details
+  document.getElementById('d-tot').textContent=totalH.toFixed(1)+' h';
+  document.getElementById('d-emp').textContent=hBase.toFixed(1)+' h';
+  document.getElementById('d-tf-label').textContent=Tfrigo;
+  document.getElementById('d-corr').textContent=frigoH.toFixed(1)+' h';
+  document.getElementById('d-apr').textContent=aprettoH.toFixed(1)+' h';
+
+  // Info
+  var infoBox=document.getElementById('info-box');
+  var infoMsg=document.getElementById('info-msg');
+  if(W<=220){
+    infoBox.className='info-box warn';
+    infoMsg.textContent='Farina al limite inferiore (W'+W+'): maturazione breve ('+frigoH+'h frigo). Valutare se la farina regge il protocollo scelto.';
+  } else if(frigoH>72){
+    infoBox.className='info-box warn';
+    infoMsg.textContent='Maturazione molto lunga ('+frigoH+'h frigo). Verificare che la farina W'+W+' regga effettivamente \u2014 il P/L e la qualit\u00e0 del glutine sono determinanti.';
+  } else {
+    infoBox.className='info-box ok';
+    infoMsg.textContent='Piano equilibrato: '+puntH+'h puntata a '+Tamb+'\u00b0C \u2192 '+frigoH+'h frigo a '+Tfrigo+'\u00b0C \u2192 '+stagH+'h staglio a '+Tamb+'\u00b0C \u2192 '+aprettoH+'h apretto a '+Tamb+'\u00b0C. Totale '+totalH.toFixed(1)+'h.';
+  }
+
+  // Ingredients
+  var U=panetti*peso;
+  var C=idro*(saleL+grassiL)+1000*(idro+100);
+  var farina=1e5*U/C;
+  var acqua=1000*idro*U/C;
+  var sale_g=saleL*idro*U/C;
+  var grassi_g=grassiL*idro*U/C;
+
+  // Yeast
+  var ff=fermFactor(pts);
+  var idroF=4.2*idro-80-0.0305*idro*idro;
+  var h=2250*(1+saleL/200)*(1+grassiL/300)/(idroF*ff);
+  var lievitoFresco=farina*h;
+  var isSecco=document.querySelector('input[name="ytype"]:checked').value==='secco';
+  var lievito=isSecco?lievitoFresco/2:lievitoFresco;
+
+  // Render
+  document.getElementById('r-lievito-label').textContent=isSecco?'Lievito secco':'Lievito fresco';
+  document.getElementById('r-mat').innerHTML=frigoH.toFixed(1).replace('.',',')+' <small>h</small>';
+  document.getElementById('r-apr').innerHTML=aprettoH.toFixed(1).replace('.',',')+' <small>h</small>';
+  document.getElementById('r-farina').innerHTML=Math.round(farina)+' <small>g</small>';
+  document.getElementById('r-acqua').innerHTML=Math.round(acqua)+' <small>g</small>';
+  document.getElementById('r-sale').innerHTML=Math.round(sale_g)+' <small>g</small>';
+  document.getElementById('r-grassi').innerHTML=Math.round(grassi_g)+' <small>g</small>';
+  document.getElementById('r-tot').innerHTML=totalH.toFixed(1).replace('.',',')+' <small>h</small>';
+  if(isNaN(lievito)||!isFinite(lievito)||lievito<=0){
+    document.getElementById('r-lievito').innerHTML='\u2014';
+  } else {
+    document.getElementById('r-lievito').innerHTML=lievito.toFixed(2).replace('.',',')+' <small>g</small>';
+  }
+}
+
+initChart();
+document.querySelectorAll('input').forEach(function(el){
+  el.addEventListener('input',calc);
+  el.addEventListener('change',calc);
+});
+calc();
+</script>
+</body>
+</html>
